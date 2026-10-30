@@ -213,7 +213,7 @@ void TStagSparseA2AVectorsGridIo<FImpl>::execute(void)
     LOG(Message) << "yshift" << yshift << std::endl;
     LOG(Message) << "zshift" << zshift << std::endl;
 
-    std::vector<std::complex<double>> evalM(2*Nl_);
+    std::vector<ComplexD> evalM(2*Nl_);   // ComplexD: saveEvalBlock takes Grid ComplexD (thrust::complex on GPU)
 
     int locx    = U.Grid()->_ldimensions[0];
     int locy    = U.Grid()->_ldimensions[1];
@@ -334,7 +334,7 @@ void TStagSparseA2AVectorsGridIo<FImpl>::execute(void)
         stopTimer("W low mode");
 
         il % 2 ? eval = conjugate(eval) : eval;
-        evalM[il] = eval;
+        evalM[il] = ComplexD(eval.real(), eval.imag());
 
         v[il]  = Zero();
         w0[il] = Zero();

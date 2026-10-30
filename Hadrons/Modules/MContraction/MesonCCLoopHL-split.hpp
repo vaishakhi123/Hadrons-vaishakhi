@@ -378,12 +378,15 @@ void TStagMesonLoopCCHL<FImpl1, FImpl2>::execute(void)
                                 eval = conjugate(eval);
                             }
                             std::complex<double> iota_angle(0.0, std::arg(eval));
+                            // source coefficient as Grid's ComplexD (std::complex on CPU, thrust::complex on GPU)
+                            std::complex<double> csrc = std::exp(-iota_angle)/std::sqrt(std::abs(eval));
+                            ComplexD             coefSrc(csrc.real(), csrc.imag());
                             int idx = ts * hits * 3 * Nl_ * 2 + 
                                       mu * hits * Nl_ * 2 +
                                       hit * Nl_ * 2 +
                                       iv * 2 + pm;
                 
-                            source += ((eta[idx])*(std::exp(-iota_angle)/std::sqrt(std::abs(eval))))*w;
+                            source += ((eta[idx])*coefSrc)*w;
                             sink += ((eta[idx])*(1./std::sqrt(std::abs(eval))))*w;
                         }
                     } 
@@ -450,7 +453,7 @@ void TStagMesonLoopCCHL<FImpl1, FImpl2>::execute(void)
                         Grid_split  (U, s_U);
                         
                         // Fermionic matrix on split grid
-                        Grid::NaiveStaggeredFermionR Ds(s_U,*SGrid,*SrbGrid,mass,c1,tad);
+                        NaiveStaggeredFermion<FImpl1> Ds(s_U,*SGrid,*SrbGrid,mass,c1,tad);
 
                         // CG on split grid
                         ConjugateGradient<FermionField> CG(par().residual,par().maxIteration);
@@ -514,7 +517,7 @@ void TStagMesonLoopCCHL<FImpl1, FImpl2>::execute(void)
             makeFileDir(par().output);
             outFileName = par().output+"HLcc_2pt_mu"+std::to_string(i);
             for(int t=0; t<nt; t++)
-                result[i].corr[t] = result[i].corr[t]/std::complex<double>(hits, 0.0);
+                result[i].corr[t] = result[i].corr[t]/ComplexD(hits, 0.0);
             saveResult(outFileName, "HLCC", result[i]);
         }
     }

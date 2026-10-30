@@ -33,11 +33,15 @@ template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<FIMPL,HADRONS_
 template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<FIMPL,600>;
 template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<ZFIMPL,HADRONS_DEFAULT_LANCZOS_NBASIS>;
 template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<STAGIMPL,HADRONS_DEFAULT_LANCZOS_NBASIS>;
+#if HADRONS_DEFAULT_LANCZOS_NBASIS != 384  // otherwise the same class as the line above
 template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<STAGIMPL,384>;
+#endif
 #ifdef GRID_DEFAULT_PRECISION_DOUBLE
 template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<FIMPL,HADRONS_DEFAULT_LANCZOS_NBASIS, FIMPLF>;
 template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<FIMPL,600, FIMPLF>;
 template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<ZFIMPL,HADRONS_DEFAULT_LANCZOS_NBASIS, ZFIMPLF>;
 template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<STAGIMPL,HADRONS_DEFAULT_LANCZOS_NBASIS, STAGIMPLF>;
+#if HADRONS_DEFAULT_LANCZOS_NBASIS != 384  // otherwise the same class as the line above
 template class HADRONS_NAMESPACE::MSolver::TLocalCoherenceLanczos<STAGIMPL,384, STAGIMPLF>;
+#endif
 #endif
