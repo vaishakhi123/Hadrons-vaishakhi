@@ -307,6 +307,10 @@ void TStagMesonLoopCCHL4D<FImpl1, FImpl2>::execute(void)
                     eval = conjugate(eval);
                 }
                 std::complex<double> iota_angle(0.0, std::arg(eval));
+                // coefficients as Grid's ComplexD (std::complex on CPU, thrust::complex on GPU)
+                std::complex<double> csrc = std::exp(-iota_angle)/std::sqrt(std::abs(eval));
+                ComplexD             coefSrc(csrc.real(), csrc.imag());
+                RealD                coefSnk = 1./std::sqrt(std::abs(eval));
                 for (int ts=its; ts< its+tblock; ts+=par().tinc){
     
                     // lopp over directions
@@ -320,8 +324,8 @@ void TStagMesonLoopCCHL4D<FImpl1, FImpl2>::execute(void)
                                       hit * Nl_ * 2 +
                                       iv * 2 + pm;
                 
-                            source_list[s_idx] += ((eta[idx])*(std::exp(-iota_angle)/std::sqrt(std::abs(eval))))*w;
-                            sink_list[s_idx] += ((eta[idx])*(1./std::sqrt(std::abs(eval))))*w;
+                            source_list[s_idx] += (eta[idx]*coefSrc)*w;
+                            sink_list[s_idx] += (eta[idx]*coefSnk)*w;
                         }
                     }
                 }
@@ -395,10 +399,10 @@ void TStagMesonLoopCCHL4D<FImpl1, FImpl2>::execute(void)
             makeFileDir(par().output);
             outFileName = par().output+"HLcc_2pt_mu"+std::to_string(i);
             for(int t=0; t<nt; t++)
-                result[i].corr[t] = result[i].corr[t]/std::complex<double>(hits, 0.0);
+                result[i].corr[t] = result[i].corr[t]/ComplexD(hits, 0.0);
             for (int ts = 0; ts < nt; ts++) {
                 for (int dt = 0; dt < nt; dt++) {
-                    result[i].corr_all[ts][dt] /= std::complex<double>(hits, 0.0);
+                    result[i].corr_all[ts][dt] /= ComplexD(hits, 0.0);
                 }
             }
             
